@@ -19,7 +19,6 @@ const getToken = (name: string) => {
 // auth link
 const authLink = setContext(async (_, { headers }) => {
   const token = getToken('mk_session');
-  console.log('hello mami');
   return {
     headers: {
       ...headers,
@@ -35,8 +34,7 @@ const wsLink = new WebSocketLink({
   options: {
     connectionParams: () => {
       const token = getToken('mk_session');
-      if (token)
-        return { headers: { authorization: { token: `Bearer ${token}` } } };
+      if (token) return { Authorization: `Bearer ${token}` };
     },
     connectionCallback: (err: any) => {
       if (err) console.log(err);

@@ -17,7 +17,7 @@ import { LOGOUT_USER } from '../../graphql/mutations/Logout';
 import { useAppDispatch, useAppSelector } from '../../context/hooks';
 import { setIsAuth, setUser } from '../../context/slices/AuthSlice';
 function TopNav() {
-  const [logoutUser, { loading, error, data }] = useMutation(LOGOUT_USER);
+  const [logoutUser] = useMutation(LOGOUT_USER);
   const user = useAppSelector((s) => s.auth.user);
   const dispatch = useAppDispatch();
   const location = useLocation();
@@ -50,9 +50,11 @@ function TopNav() {
         <div className={getURL() !== '/' ? 'w-[80%]' : 'lg:w-[20%] w-[70%]'}>
           <Link to="/">
             <img
-              src={'https://picsum.photos/id/83/300/320'}
-              width={getURL() !== '/' ? '100' : '50'}
-              height={getURL() !== '/' ? '100' : '50'}
+              src={
+                'https://cdn.prod.website-files.com/61ed56ae9da9fd7e0ef0a967/61f12e3a57bdb3717fbf9cec_Product_Default.svg'
+              }
+              width={getURL() == '/' ? '130' : '50'}
+              // height={getURL() == '/' ? '20' : '50'}
               alt="logo"
             />
           </Link>
