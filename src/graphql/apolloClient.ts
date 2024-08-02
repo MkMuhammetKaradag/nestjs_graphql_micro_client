@@ -47,6 +47,7 @@ const wsLink = new WebSocketLink({
 // upload link
 const uploadLink = createUploadLink({
   uri: 'http://localhost:3000/graphql',
+  credentials: 'include',
   headers: {
     'apollo-require-preflight': 'true',
   },
@@ -94,6 +95,10 @@ const cache = new InMemoryCache({
 
 const client = new ApolloClient({
   link: splitLink,
+  credentials: 'include',
+  headers: {
+    'Content-Type': 'application/json',
+  },
   cache,
 });
 export default client;

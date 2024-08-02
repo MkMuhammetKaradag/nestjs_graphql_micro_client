@@ -9,12 +9,12 @@ export interface User {
 
 export interface AuthState {
   user: User | null;
-  isAuthLoading: boolean;
+  isAuth: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
-  isAuthLoading: true,
+  isAuth: true,
 };
 
 export const authSlice = createSlice({
@@ -24,9 +24,13 @@ export const authSlice = createSlice({
     setUser: (state, action: PayloadAction<User | null>) => {
       state.user = action.payload;
     },
+
+    setIsAuth: (state, action: PayloadAction<boolean>) => {
+      state.isAuth = action.payload;
+    },
   },
 });
 
-export const { setUser } = authSlice.actions;
+export const { setUser, setIsAuth } = authSlice.actions;
 
 export default authSlice.reducer;

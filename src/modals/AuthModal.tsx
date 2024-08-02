@@ -3,10 +3,11 @@ import { ImCross } from 'react-icons/im';
 import Login from '../components/auth/Login';
 import Register from '../components/auth/Register';
 import ForgotPassword from '../components/auth/ForgotPassword';
+import { useAppDispatch } from '../context/hooks';
+import { setIsAuth } from '../context/slices/AuthSlice';
 
 function AuthModal({ setOpen }: { setOpen: (e: boolean) => void }) {
-  const [isRegistered, setIsRegistered] = useState(false);
-  const [isLoginOpen, setLoginIsOpen] = useState(false);
+  const dispatch = useAppDispatch();
   const [activeState, setActiveState] = useState('Login');
   //   const setLoginIsOpen = useGeneralStore((state) => state.setLoginIsOpen);
   //   const isLoginOpen = useGeneralStore((state) => state.isLoginOpen);
@@ -18,15 +19,13 @@ function AuthModal({ setOpen }: { setOpen: (e: boolean) => void }) {
       <div className="relative bg-white w-full max-w-[470px] h-[70%] p-4 rounded-lg">
         <div className="w-full flex justify-end">
           <button
-            onClick={() => setOpen(false)}
+            onClick={() => dispatch(setIsAuth(false))}
             className="p-1.5 rounded-full bg-gray-100"
           >
             <ImCross color="#000000" size="26" />
           </button>
         </div>
-        {activeState === 'Login' && (
-          <Login setActiveState={setActiveState} setOpen={setOpen} />
-        )}
+        {activeState === 'Login' && <Login setActiveState={setActiveState} />}
         {activeState === 'Register' && <Register />}
         {activeState === 'Forgot-Password' && (
           <ForgotPassword setActiveState={setActiveState} />

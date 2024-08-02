@@ -5,12 +5,12 @@ import { useAppSelector } from './context/hooks';
 
 function App() {
   const [open, setOpen] = useState(true);
-  const isAuthLoading = useAppSelector((s) => s.auth.isAuthLoading);
-  console.log('app.tsx dosyası', isAuthLoading);
+  const isAuth = useAppSelector((s) => s.auth.isAuth);
+  console.log('app.tsx dosyası', isAuth);
 
   return (
     <div className="bg-red-500 text-red-000">
-      {isAuthLoading && <AuthModal setOpen={setOpen}></AuthModal>}
+      {isAuth && <AuthModal setOpen={setOpen}></AuthModal>}
     </div>
   );
 }

@@ -22,7 +22,7 @@ const ReduxProvider = ({ children }: ReduxProvider) => {
     preloadedState: {
       auth: {
         user: data?.getMe,
-        isAuthLoading: !data && !!error,
+        isAuth: !data && !!error,
       },
     },
   });

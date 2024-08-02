@@ -11,6 +11,8 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { LOGIN_USER } from '../../graphql/mutations/Login';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
+import { useAppDispatch } from '../../context/hooks';
+import { setIsAuth, setUser } from '../../context/slices/AuthSlice';
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -20,10 +22,8 @@ type LoginSchema = z.infer<typeof formSchema>;
 
 function Login({
   setActiveState,
-  setOpen,
 }: {
   setActiveState: (e: string) => void;
-  setOpen: (e: boolean) => void;
 }) {
   const {
     register,
@@ -37,39 +37,32 @@ function Login({
   });
   const [show, setShow] = useState(false);
   const [Login, { loading, error }] = useMutation(LOGIN_USER);
-  // if (error) {
-  //   // const graphQLErrors = error.graphQLErrors
-  //   //   .map((err) => err.message)
-  //   //   .join(', ');
-  //   const networkError = error.networkError
-  //     ? error.networkError.message
-  //     : 'No network error';
-
-  //   console.log('GraphQL Errors:', error.graphQLErrors[0].message);
-  //   console.log('Network Error:', networkError);
-  // }
+  const dispatch = useAppDispatch();
   const handleLogin = async (data: LoginSchema) => {
     const loginData = {
       email: data.email,
       password: data.password,
     };
 
-    const response = await Login({
+    await Login({
       variables: loginData,
     })
       .then((res) => {
         if (res.data.login.token) {
-          toast.success("login")
+          toast.success('login');
           Cookies.set('mk_session', res.data.login.token);
+          dispatch(setUser(res.data.login.user));
           reset(); //
-          window.location.reload(); //
+
+          dispatch(setIsAuth(false));
+
+          // window.location.reload(); //
         } else {
-          
         }
       })
       .catch((error) => {
         console.log('GraphQL Errors:', error.graphQLErrors[0].message);
-        toast.error(`hata  ${error.graphQLErrors[0].message}` );
+        toast.error(`hata  ${error.graphQLErrors[0].message}`);
       });
   };
 
