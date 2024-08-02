@@ -1,11 +1,18 @@
-import React from 'react';
+import { useState } from 'react';
+import './App.css';
+import AuthModal from './modals/AuthModal';
+import { useAppSelector } from './context/hooks';
 
-const App = () => {
+function App() {
+  const [open, setOpen] = useState(true);
+  const isAuthLoading = useAppSelector((s) => s.auth.isAuthLoading);
+  console.log('app.tsx dosyası', isAuthLoading);
+
   return (
-    <div>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
+    <div className="bg-red-500 text-red-000">
+      {isAuthLoading && <AuthModal setOpen={setOpen}></AuthModal>}
     </div>
   );
-};
+}
 
 export default App;

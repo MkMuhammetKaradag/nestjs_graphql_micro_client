@@ -18,7 +18,8 @@ const getToken = (name: string) => {
 };
 // auth link
 const authLink = setContext(async (_, { headers }) => {
-  const token = getToken('__session');
+  const token = getToken('mk_session');
+  console.log('hello mami');
   return {
     headers: {
       ...headers,
@@ -33,7 +34,7 @@ const wsLink = new WebSocketLink({
   uri: 'ws://localhost:3000/graphql',
   options: {
     connectionParams: () => {
-      const token = getToken('__session');
+      const token = getToken('mk_session');
       if (token)
         return { headers: { authorization: { token: `Bearer ${token}` } } };
     },
