@@ -1,20 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GET_PRODUCTS } from '../graphql/queries/GetProducts';
 import { useQuery, useSubscription } from '@apollo/client';
 import { CREATED_PRODUCT_SUBSCRIPTION } from '../graphql/subcriptions/CreateProduct';
-
+import ProductCard from '../components/app/ProductCard';
+import { Product } from '../utils/productTypes';
+import Pagination from '../components/app/Pagination';
+import { useAppSelector } from '../context/hooks';
 const HomePage = () => {
-  // const {
-  //   loading: subLoading,
-  //   error: subError,
-  //   data: subData,
-  // } = useSubscription(CREATED_PRODUCT_SUBSCRIPTION);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    console.log(page);
+  };
+  const searchText = useAppSelector((s) => s.app.searchText);
   const { data, loading, error, subscribeToMore } = useQuery(GET_PRODUCTS, {
     variables: {
       input: {
-        take: 0,
-        skip: 0,
-        keyword: '',
+        take: itemsPerPage,
+        skip: itemsPerPage * (currentPage - 1),
+        keyword: searchText,
       },
     },
   });
@@ -49,15 +55,21 @@ const HomePage = () => {
 
   return (
     <div>
-      <div>
-        {/* <h1>{subData && <div>{subData.productCreated.id}</div>}</h1> */}
+      <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-4  justify-center">
         {data &&
-          data.getProducts.products.map((product) => (
+          data.getProducts.products.map((product: Product) => (
             <div key={product.id}>
-              <h2>{product.name}</h2>
+              <ProductCard product={product}></ProductCard>
             </div>
           ))}
       </div>
+
+      <Pagination
+        totalItems={data.getProducts.total}
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

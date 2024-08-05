@@ -5,6 +5,7 @@ import Register from '../components/auth/Register';
 import ForgotPassword from '../components/auth/ForgotPassword';
 import { useAppDispatch } from '../context/hooks';
 import { setIsAuth } from '../context/slices/AuthSlice';
+import Verification from '../components/auth/Verification';
 
 function AuthModal({ setOpen }: { setOpen: (e: boolean) => void }) {
   const dispatch = useAppDispatch();
@@ -26,15 +27,17 @@ function AuthModal({ setOpen }: { setOpen: (e: boolean) => void }) {
           </button>
         </div>
         {activeState === 'Login' && <Login setActiveState={setActiveState} />}
-        {activeState === 'Register' && <Register />}
+        {activeState === 'Register' && (
+          <Register setActiveState={setActiveState} />
+        )}
         {activeState === 'Forgot-Password' && (
           <ForgotPassword setActiveState={setActiveState} />
         )}
-        {/* {isRegistered ? (
-          <Login setActiveState={setActiveState} setOpen={setLoginIsOpen} />
-        ) : (
-          <Register />
-        )} */}
+
+        {activeState === 'Verification' && (
+          <Verification setActiveState={setActiveState} />
+        )}
+
         <div className="absolute flex items-center justify-center py-5 left-0 bottom-0 border-t w-full">
           <span className="text-[14px] text-gray-600">
             Don't have an account?
@@ -42,7 +45,7 @@ function AuthModal({ setOpen }: { setOpen: (e: boolean) => void }) {
           <button
             onClick={() =>
               activeState === 'Login'
-                ? setActiveState('regiter')
+                ? setActiveState('Register')
                 : setActiveState('Login')
             }
             className="text-[14px] text-[#d44b69e1] font-semibold pl-1"

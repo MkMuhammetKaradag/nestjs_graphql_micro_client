@@ -6,7 +6,7 @@ import { useAppSelector } from './context/hooks';
 function App() {
   const [open, setOpen] = useState(true);
   const isAuth = useAppSelector((s) => s.auth.isAuth);
-  console.log('app.tsx dosyası', isAuth);
+
 
   return (
     <div className="bg-red-500 text-red-000">

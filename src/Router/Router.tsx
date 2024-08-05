@@ -8,14 +8,15 @@ import AppNavigator from './navigations/AppNavigator';
 import AuthNavigator from './navigations/AuthNavigator';
 const Router = () => {
   const isAuth = useAppSelector((s) => s.auth.isAuth);
+  const user = useAppSelector((s) => s.auth.user);
   return (
     <div className="flex relative items-center h-screen flex-col">
       <header>
         <TopNav />
       </header>
 
-      <div className="flex pt-[80px]  container  bg-slate-200  ">
-        {!isAuth ? (
+      <div className="flex py-[80px]  container    justify-center ">
+        {!isAuth && user ? (
           <AppNavigator></AppNavigator>
         ) : (
           <AuthNavigator></AuthNavigator>

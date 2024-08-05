@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import AuthReducer, { User } from './slices/AuthSlice';
+import AuthReducer from './slices/AuthSlice';
+import AppReducer from './slices/AppSlice';
 import { useQuery } from '@apollo/client';
 import { GET_ME } from '../graphql/queries/GetMe';
 // import { GetCharctersQuery, GetCharctersQueryVariables } from '../gql/graphql';
@@ -15,6 +16,7 @@ const ReduxProvider = ({ children }: ReduxProvider) => {
 
   const reducer = {
     auth: AuthReducer,
+    app: AppReducer,
   };
 
   const store = configureStore({
@@ -23,6 +25,9 @@ const ReduxProvider = ({ children }: ReduxProvider) => {
       auth: {
         user: data?.getMe,
         isAuth: !data && !!error,
+      },
+      app: {
+        searchText: '',
       },
     },
   });
