@@ -22,16 +22,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   return (
-    <div className="min-w-sm  max-w-sm rounded overflow-hidden shadow-lg p-3 relative   bg-white">
+    <div className=" h-[410px] rounded overflow-hidden shadow-lg p-3 relative   bg-white">
       <div className="relative">
         {imageArray.length > 0 ? (
           <img
-            className="w-72 h-48 object-cover"
+            className="max-w-[15rem] h-48 object-cover"
             src={imageArray[currentImage]}
             alt={name}
           />
         ) : (
-          <div className=" w-72 h-48 flex items-center justify-center bg-gray-200">
+          <div className=" max-w-[15rem] h-48 flex items-center justify-center bg-gray-200">
             <span className="text-gray-500">Resim Yok</span>
           </div>
         )}
@@ -54,7 +54,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </Link>
 
         <p className="text-gray-700 text-base">
-         
           {description.length > 30
             ? `${description.substring(0, 30)}...`
             : description}

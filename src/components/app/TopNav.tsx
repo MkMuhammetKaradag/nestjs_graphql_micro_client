@@ -134,7 +134,7 @@ function TopNav() {
                   >
                     <Link
                       onClick={() => setShowMenu(!showMenu)}
-                      to={'/profile/' + user?.id}
+                      to={'/profile/'}
                       className="flex flex-col px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                     >
                       {' '}

@@ -9,6 +9,16 @@ export const GET_PRODUCT = gql`
       quantity
       images
       name
+      comments{
+        id
+        text
+        createdAt
+        user{
+          id
+          firstName
+          lastName
+        }
+      }
       vendor {
         id
         firstName
