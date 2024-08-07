@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ImCross } from 'react-icons/im';
 import Login from '../components/auth/Login';
 import Register from '../components/auth/Register';
@@ -6,10 +6,23 @@ import ForgotPassword from '../components/auth/ForgotPassword';
 import { useAppDispatch } from '../context/hooks';
 import { setIsAuth } from '../context/slices/AuthSlice';
 import Verification from '../components/auth/Verification';
+import ResetPassword from '../components/auth/ResetPassword';
+import { useLocation } from 'react-router-dom';
 
 function AuthModal({ setOpen }: { setOpen: (e: boolean) => void }) {
+  const [verifyCode, setVerifyCode] = useState<string | null>(null);
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const [activeState, setActiveState] = useState('Login');
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const code = params.get('verify');
+    if (code) {
+      setActiveState('Reset-password');
+    }
+    setVerifyCode(code);
+  }, [location.search]);
+
   //   const setLoginIsOpen = useGeneralStore((state) => state.setLoginIsOpen);
   //   const isLoginOpen = useGeneralStore((state) => state.isLoginOpen);
   return (
@@ -26,6 +39,12 @@ function AuthModal({ setOpen }: { setOpen: (e: boolean) => void }) {
             <ImCross color="#000000" size="26" />
           </button>
         </div>
+        {verifyCode && (
+          <ResetPassword
+            activationToken={verifyCode}
+            setActiveState={setActiveState}
+          />
+        )}
         {activeState === 'Login' && <Login setActiveState={setActiveState} />}
         {activeState === 'Register' && (
           <Register setActiveState={setActiveState} />
@@ -37,7 +56,6 @@ function AuthModal({ setOpen }: { setOpen: (e: boolean) => void }) {
         {activeState === 'Verification' && (
           <Verification setActiveState={setActiveState} />
         )}
-
         <div className="absolute flex items-center justify-center py-5 left-0 bottom-0 border-t w-full">
           <span className="text-[14px] text-gray-600">
             Don't have an account?
