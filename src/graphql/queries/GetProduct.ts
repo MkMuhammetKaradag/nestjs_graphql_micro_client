@@ -3,30 +3,19 @@ export const GET_PRODUCT = gql`
   query GetProduct($input: GetProductDto!) {
     getProduct(getProductDto: $input) {
       product {
-      id
-      description
-      price
-      quantity
-      images
-      name
-      comments{
         id
-        text
-        createdAt
-        user{
+        description
+        price
+        quantity
+        images
+        name
+        vendor {
           id
           firstName
           lastName
+          email
         }
       }
-      vendor {
-        id
-        firstName
-        lastName
-        email
-      }
-    }
- 
     }
   }
 `;

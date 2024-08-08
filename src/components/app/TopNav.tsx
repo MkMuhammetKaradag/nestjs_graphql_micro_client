@@ -121,11 +121,17 @@ function TopNav() {
 
               <div className="relative">
                 <button className="mt-1" onClick={() => setShowMenu(!showMenu)}>
-                  <img
-                    className="rounded-full"
-                    width="33"
-                    src={'https://picsum.photos/id/83/300/320'}
-                  />
+                  {user.profilPhoto ? (
+                    <img
+                      className="rounded-full"
+                      width="33"
+                      src={user.profilPhoto}
+                    />
+                  ) : (
+                    <div className="rounded-full flex min-h-9 min-w-9 items-center justify-center bg-gray-200">
+                      <span className="text-gray-500">N</span>
+                    </div>
+                  )}
                 </button>
                 {showMenu && (
                   <div
