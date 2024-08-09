@@ -168,9 +168,7 @@ const ProductPage = () => {
   return (
     <div className="container  mx-auto p-4">
       <div className="bg-white   rounded-lg shadow-lg p-6 ">
-        <h1 className="text-3xl font-bold mb-4">
-          {name} {comments ? comments.length : 0}
-        </h1>
+        <h1 className="text-3xl font-bold mb-4">{name}</h1>
 
         <div className="grid h-[100%]  grid-cols-1 md:grid-cols-2 gap-10">
           {/* Resim Galerisi */}
@@ -210,7 +208,7 @@ const ProductPage = () => {
                 ${price}
               </p>
               <p className="text-lg text-gray-500 mb-4">Stok: {quantity}</p>
-              <button className="bg-blue-500 text-white px-4 py-2 rounded-lg">
+              <button className="bg-red-500 text-white px-4 py-2 rounded-lg">
                 Sepete Ekle
               </button>
 
@@ -234,7 +232,7 @@ const ProductPage = () => {
                 <div>Non Comment</div>
               )}
             </div>
-            <div>
+            <div className="absolute bottom-0 w-full">
               <form onSubmit={handleSubmit(onSubmitCreateComment)}>
                 <input
                   {...register('comment')}
@@ -248,17 +246,18 @@ const ProductPage = () => {
                   </span>
                 )}
               </form>
+
+              {comments && dataComments.getComments.total > comments.length && (
+                <div className="flex  justify-center">
+                  <Pagination
+                    totalItems={dataComments.getComments.total}
+                    itemsPerPage={itemsPerPage}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                  ></Pagination>
+                </div>
+              )}
             </div>
-            {comments && dataComments.getComments.total > comments.length && (
-              <div className="flex  absolute bottom-0 justify-center">
-                <Pagination
-                  totalItems={dataComments.getComments.total}
-                  itemsPerPage={itemsPerPage}
-                  currentPage={currentPage}
-                  onPageChange={handlePageChange}
-                ></Pagination>
-              </div>
-            )}
           </div>
         </div>
       </div>
