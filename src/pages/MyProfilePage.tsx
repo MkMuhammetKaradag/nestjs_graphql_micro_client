@@ -4,10 +4,12 @@ import { useMutation } from '@apollo/client';
 import { UPLOAD_PROFIL_PHOTO } from '../graphql/mutations/UploadProfilPhoto';
 
 const MyProfilePage = () => {
+  const [files, setFiles] = useState<File[]>([]);
   const [uploadProfilePhoto, { loading, error }] =
     useMutation(UPLOAD_PROFIL_PHOTO);
 
-  const handleImagesUpload = (files: File[]) => {
+  const handleImagesUpload = () => {
+    // console.log(files);
     try {
       uploadProfilePhoto({
         variables: {
@@ -29,10 +31,21 @@ const MyProfilePage = () => {
       <h2 className="text-2xl font-semibold mb-6">Upload your Profil Photo</h2>
       {loading && <div>loading </div>}
       <ImageDropzone
-        multiple={false}
+        multiple={true}
         maxFiles={3}
-        onImagesUpload={handleImagesUpload}
+        setFiles={setFiles}
+        // onImagesUpload={handleImagesUpload}
       />
+
+      <div>
+        <button
+          disabled={files.length === 0}
+          className="bg-red-500 p-3 text-white mt-3"
+          onClick={handleImagesUpload}
+        >
+          send
+        </button>
+      </div>
     </div>
   );
 };

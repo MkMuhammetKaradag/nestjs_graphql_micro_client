@@ -2,15 +2,17 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 interface ImageDropzoneProps {
-  onImagesUpload: (files: File[]) => void;
+  // onImagesUpload: (files: File[]) => void;
   multiple?: boolean;
   maxFiles?: number;
+  setFiles: React.Dispatch<React.SetStateAction<File[]>>;
 }
 
 const ImageDropzone: React.FC<ImageDropzoneProps> = ({
-  onImagesUpload,
+  // onImagesUpload,
   multiple = false,
   maxFiles = 3,
+  setFiles,
 }) => {
   const [images, setImages] = useState<{ id: string; url: string }[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<
@@ -48,6 +50,12 @@ const ImageDropzone: React.FC<ImageDropzoneProps> = ({
       });
 
       //   onImagesUpload(multiple ? [...uploadedFiles, ...newFiles] : newFiles);
+
+      setFiles(
+        multiple
+          ? [...uploadedFiles.map((f) => f.file), ...acceptedFiles]
+          : acceptedFiles
+      );
     },
     [multiple, images.length, maxFiles, uploadedFiles]
   );
@@ -57,6 +65,16 @@ const ImageDropzone: React.FC<ImageDropzoneProps> = ({
     setUploadedFiles((prevFiles) =>
       prevFiles.filter((fileObj) => fileObj.id !== id)
     );
+
+    setFiles([
+      ...uploadedFiles
+        .map((f) => {
+          if (f.id !== id) {
+            return f.file;
+          }
+        })
+        .filter((f) => f != null),
+    ]);
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -110,15 +128,15 @@ const ImageDropzone: React.FC<ImageDropzoneProps> = ({
         ))}
       </div>
 
-      <div>
+      {/* <div>
         <button
           disabled={uploadedFiles.length === 0}
           className="bg-red-500 p-3 text-white mt-3"
           onClick={() => onImagesUpload([...uploadedFiles.map((f) => f.file)])}
         >
           send
-        </button>
-      </div>
+        </button> */}
+      {/* </div> */}
     </div>
   );
 };

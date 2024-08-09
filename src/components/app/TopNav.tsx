@@ -82,14 +82,14 @@ function TopNav() {
           </div>
         </div>
         <div className="flex items-center justify-end gap-3 min-w-[275px] max-w-[320px] w-full">
-          {location.pathname === '/profile' ? (
+          {user && user.roles.includes('admin') ? (
             <Link
-              to="/upload"
+              to="/create-product"
               className="flex items-center border rounded-sm px-3 py-[6px] hover:bg-gray-100"
             >
               <AiOutlineUpload size="20" color="#161724" />
               <span className="px-2 font-medium text-[15px] text-[#161724]">
-                Upload
+                Create
               </span>
             </Link>
           ) : (

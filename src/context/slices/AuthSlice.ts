@@ -6,6 +6,7 @@ export interface User {
   firstName: string;
   lastName: string;
   profilPhoto?: string;
+  roles:string[]
 }
 
 export interface AuthState {

@@ -17,7 +17,7 @@ const Router = () => {
 
       <div className="flex py-[80px]  container    justify-center ">
         {!isAuth && user ? (
-          <AppNavigator></AppNavigator>
+          <AppNavigator userRoles={user.roles}></AppNavigator>
         ) : (
           <AuthNavigator></AuthNavigator>
         )}
