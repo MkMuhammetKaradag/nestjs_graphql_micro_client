@@ -6,7 +6,7 @@ import {
   AiOutlineFileSearch,
   AiOutlineUpload,
 } from 'react-icons/ai';
-import { BsThreeDotsVertical, BsFillSendFill } from 'react-icons/bs';
+import { BsThreeDotsVertical, BsBasket2Fill } from 'react-icons/bs';
 import { BiMessageDetail } from 'react-icons/bi';
 import { GrLogout } from 'react-icons/gr';
 import { BsFillPersonFill } from 'react-icons/bs';
@@ -17,10 +17,12 @@ import { LOGOUT_USER } from '../../graphql/mutations/Logout';
 import { useAppDispatch, useAppSelector } from '../../context/hooks';
 import { setIsAuth, setUser } from '../../context/slices/AuthSlice';
 import { setSearchText } from '../../context/slices/AppSlice';
+import { RootState } from '@reduxjs/toolkit/query';
 function TopNav() {
   const [logoutUser] = useMutation(LOGOUT_USER);
   const [searchInput, setSearchInput] = useState('');
   const user = useAppSelector((s) => s.auth.user);
+  const items = useAppSelector((state) => state.shoppingCart.items);
   const dispatch = useAppDispatch();
   const location = useLocation();
   const getURL = () => {
@@ -116,7 +118,22 @@ function TopNav() {
           )}
           {user && (
             <div className="flex items-center">
-              <BsFillSendFill size="25" color="#161724" />
+              <Link
+                to={'/basket/'}
+                className="flex relative  flex-col px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                onClick={() => console.log('basket')}
+              >
+                <BsBasket2Fill
+                  size="25"
+                  // color="#161724"
+                  className="cursor-pointer"
+                />
+
+                <div className="absolute top-2 right-3 inline-flex items-center justify-center p-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
+                  {items.length}
+                </div>
+              </Link>
+
               <BiMessageDetail size="25" color="#161724" />
 
               <div className="relative">

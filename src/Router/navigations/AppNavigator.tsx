@@ -7,6 +7,7 @@ import MyProfilePage from '../../pages/MyProfilePage';
 import AdminRoute from '../AdminRoute';
 import NotAuthorized from '../../components/app/NotAuthorized';
 import ProductCreationPage from '../../pages/ProductCreationPage';
+import BasketPage from '../../pages/BasketPage';
 
 interface AppNavigatorProps {
   userRoles: string[];
@@ -28,6 +29,7 @@ const AppNavigator: React.FC<AppNavigatorProps> = ({ userRoles }) => {
       ></Route>
 
       <Route path="/not-authorized" element={<NotAuthorized />} />
+      <Route path="/basket" element={<BasketPage />}></Route>
     </Routes>
   );
 };
