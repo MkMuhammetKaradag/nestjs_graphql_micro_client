@@ -23,15 +23,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <div className=" h-[410px] rounded overflow-hidden shadow-lg p-3 relative   bg-white">
-      <div className="relative">
+      <div className="relative ">
         {imageArray.length > 0 ? (
           <img
-            className="max-w-[15rem] h-48 object-cover"
+            className="h-48 object-contain"
             src={imageArray[currentImage]}
             alt={name}
           />
         ) : (
-          <div className=" max-w-[15rem] h-48 flex items-center justify-center bg-gray-200">
+          <div className="  h-48 flex items-center justify-center bg-gray-200">
             <span className="text-gray-500">Resim Yok</span>
           </div>
         )}

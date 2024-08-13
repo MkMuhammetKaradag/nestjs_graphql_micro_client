@@ -4,4 +4,5 @@ export type Product = {
   description: string;
   images: string[] | null; // Resim URL'lerini içeren bir dizi
   price: number;
+  quantity: number;
 };

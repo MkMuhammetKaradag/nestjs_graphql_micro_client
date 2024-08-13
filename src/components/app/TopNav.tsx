@@ -140,8 +140,7 @@ function TopNav() {
                 <button className="mt-1" onClick={() => setShowMenu(!showMenu)}>
                   {user.profilPhoto ? (
                     <img
-                      className="rounded-full"
-                      width="33"
+                      className="h-10 w-10 rounded-full object-cover"
                       src={user.profilPhoto}
                     />
                   ) : (

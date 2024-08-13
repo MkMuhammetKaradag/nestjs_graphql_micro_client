@@ -10,7 +10,7 @@ const CommentCard: FC<CommentCardProps> = ({ comment }) => {
         <div>
           {comment.user.profilPhoto ? (
             <img
-              className="rounded-full h-8 w-8"
+              className="rounded-full h-8 w-8 object-cover"
               src={comment.user.profilPhoto}
             />
           ) : (

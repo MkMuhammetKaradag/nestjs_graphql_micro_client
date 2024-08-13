@@ -12,6 +12,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CREATE_COMMENT } from '../graphql/mutations/CreateComment';
 import toast from 'react-hot-toast';
+import { useAppDispatch } from '../context/hooks';
+import { ADD_SHOPPING_CART_PRODUCT } from '../graphql/mutations/AddShoppinCardProduct';
+import { addToCart } from '../context/slices/ShoppingCartSlice';
+import Comments from '../components/app/Comments';
+import { GraphQLError } from 'graphql';
 interface Vendor {
   id: number;
   firstName: string;
@@ -37,27 +42,15 @@ interface Product {
   vendor: Vendor;
 }
 
-const formSchema = z.object({
-  comment: z.string().min(4, 'comment must be at least 4 characters long!'),
-});
-type CreateCommentSchema = z.infer<typeof formSchema>;
-
 const ProductPage = () => {
   const { id } = useParams<{ id: string }>();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  // const [isLoaded, setIsLoaded] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
-    watch,
-  } = useForm<CreateCommentSchema>({
-    resolver: zodResolver(formSchema),
-  });
 
+  // const [isLoaded, setIsLoaded] = useState(false);
+
+  const dispatch = useAppDispatch();
+
+  const [updateCartItem] = useMutation(ADD_SHOPPING_CART_PRODUCT);
   const {
     data: dataProduct,
     loading: loadingProduct,
@@ -71,71 +64,7 @@ const ProductPage = () => {
     },
   });
 
-  const {
-    data: dataComments,
-    loading: loadingComments,
-    error: errorComments,
-    subscribeToMore,
-  } = useQuery(GET_COMMENTS, {
-    variables: {
-      input: {
-        productId: Number(id),
-        take: itemsPerPage,
-        skip: itemsPerPage * (currentPage - 1),
-      },
-    },
-  });
-
-  const [createComment, { loading: createCommentLoading }] =
-    useMutation(CREATE_COMMENT);
-
-  const onSubmitCreateComment = async (data: CreateCommentSchema) => {
-    try {
-      await createComment({
-        variables: {
-          input: {
-            productId: Number(id),
-            comment: data.comment,
-          },
-        },
-      });
-      toast.success('Please check your email to reset your password!');
-      reset();
-    } catch (error: any) {
-      console.log('GraphQL Errors:', error.graphQLErrors[0].message);
-      toast.error(`Error  ${error.graphQLErrors[0].message}`);
-    }
-  };
-  useEffect(() => {
-    // Yeni ürünler eklendiğinde listeyi güncellemek için subscribeToMore'u kullanın
-    const unsubscribe = subscribeToMore({
-      document: CREATE_COMMENT_PRODUCT_SUBSCRIPTION,
-      variables: {
-        productId: Number(id),
-      },
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) return prev;
-        const newComment = subscriptionData.data.createCommentProduct;
-        return {
-          ...prev,
-          getComments: {
-            ...prev.getComments,
-            comments: [newComment, ...prev.getComments.comments],
-            total: prev.getComments.total + 1,
-          },
-        };
-      },
-      onError: (err) => {
-        // console.log('GraphQL Errors:', err.graphQLErrors[0].message);
-        console.log(err);
-      },
-    });
-
-    // Aboneliği bileşen temizlenirken iptal edin
-    return () => unsubscribe();
-  }, [subscribeToMore]);
-
-  if (loadingProduct || loadingComments) {
+  if (loadingProduct) {
     return <div>Yükleniyor...</div>;
   }
 
@@ -147,24 +76,27 @@ const ProductPage = () => {
     return <div>Ürün bulunamadı</div>;
   }
 
-  if (errorComments) {
-    return <div>Bir hata oluştu: {errorComments.message}</div>;
-  }
-
-  if (!dataComments || !dataComments.getComments.comments) {
-    return <div>Ürün bulunamadı</div>;
-  }
   const product: Product = dataProduct.getProduct.product;
-  const comments: Comment[] | null = dataComments.getComments.comments;
+
   const { name, description, price, quantity, images, vendor } = product;
   const handleImageClick = (img: string) => {
     setSelectedImage(img);
   };
   const imageArray = images || [];
+  const handleAddBasket = async (product: Product) => {
+    try {
+      await updateCartItem({
+        variables: { input: { productId: product.id } },
+      });
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+      dispatch(addToCart(product));
+
+      toast.success('Product added Basket');
+    } catch (error: any) {
+      toast.error(`hata  ${error.graphQLErrors[0].message}`);
+    }
   };
+
   return (
     <div className="container  mx-auto p-4">
       <div className="bg-white   rounded-lg shadow-lg p-6 ">
@@ -208,7 +140,10 @@ const ProductPage = () => {
                 ${price}
               </p>
               <p className="text-lg text-gray-500 mb-4">Stok: {quantity}</p>
-              <button className="bg-red-500 text-white px-4 py-2 rounded-lg">
+              <button
+                onClick={() => handleAddBasket(product)}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-sm"
+              >
                 Sepete Ekle
               </button>
 
@@ -222,43 +157,7 @@ const ProductPage = () => {
           </div>
 
           {/* Ürün Bilgileri */}
-          <div className="flex flex-col  relative">
-            <div className="max-h-[84%] overflow-auto">
-              {comments && comments?.length > 0 ? (
-                comments.map((comment) => {
-                  return <CommentCard comment={comment}></CommentCard>;
-                })
-              ) : (
-                <div>Non Comment</div>
-              )}
-            </div>
-            <div className="absolute bottom-0 w-full">
-              <form onSubmit={handleSubmit(onSubmitCreateComment)}>
-                <input
-                  {...register('comment')}
-                  type={'text'}
-                  placeholder="comment"
-                  className={`${styles.input}`}
-                />
-                {errors.comment && (
-                  <span className="text-red-500 block mt-1">
-                    {`${errors.comment.message}`}
-                  </span>
-                )}
-              </form>
-
-              {comments && dataComments.getComments.total > comments.length && (
-                <div className="flex  justify-center">
-                  <Pagination
-                    totalItems={dataComments.getComments.total}
-                    itemsPerPage={itemsPerPage}
-                    currentPage={currentPage}
-                    onPageChange={handlePageChange}
-                  ></Pagination>
-                </div>
-              )}
-            </div>
-          </div>
+          <Comments id={Number(id)}></Comments>
         </div>
       </div>
     </div>

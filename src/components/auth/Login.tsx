@@ -20,11 +20,7 @@ const formSchema = z.object({
 });
 type LoginSchema = z.infer<typeof formSchema>;
 
-function Login({
-  setActiveState,
-}: {
-  setActiveState: (e: string) => void;
-}) {
+function Login({ setActiveState }: { setActiveState: (e: string) => void }) {
   const {
     register,
     handleSubmit,
@@ -45,25 +41,31 @@ function Login({
     };
 
     await Login({
-      variables: loginData,
-    })
-      .then((res) => {
-        if (res.data.login.token) {
-          toast.success('login');
-          Cookies.set('mk_session', res.data.login.token);
-          dispatch(setUser(res.data.login.user));
-          reset(); //
+      variables: { ...loginData },
+      onCompleted: (data) => {
+        Cookies.set('mk_session', data.login.token);
+        dispatch(setUser(data.login.user));
+        reset(); //
+        window.location.reload();
+        dispatch(setIsAuth(false));
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+      // refetchQueries: ['GetShoppingCart'],
+    });
+    // .then((res) => {
+    //   if (res.data.login.token) {
+    //     toast.success('login');
 
-          dispatch(setIsAuth(false));
-
-          // window.location.reload(); //
-        } else {
-        }
-      })
-      .catch((error) => {
-        console.log('GraphQL Errors:', error.graphQLErrors[0].message);
-        toast.error(`hata  ${error.graphQLErrors[0].message}`);
-      });
+    //     // window.location.reload(); //
+    //   } else {
+    //   }
+    // })
+    // .catch((error) => {
+    //   console.log('GraphQL Errors:', error.graphQLErrors[0].message);
+    //   toast.error(`hata  ${error.graphQLErrors[0].message}`);
+    // });
   };
 
   return (

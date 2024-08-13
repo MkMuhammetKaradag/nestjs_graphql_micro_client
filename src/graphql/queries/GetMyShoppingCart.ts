@@ -12,6 +12,7 @@ export const GET_MY_SHOPPING_CART = gql`
             name
             images
             price
+            quantity
           }
           quantity
         }

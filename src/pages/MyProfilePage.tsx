@@ -31,8 +31,8 @@ const MyProfilePage = () => {
       <h2 className="text-2xl font-semibold mb-6">Upload your Profil Photo</h2>
       {loading && <div>loading </div>}
       <ImageDropzone
-        multiple={true}
-        maxFiles={3}
+        multiple={false}
+        maxFiles={1}
         setFiles={setFiles}
         // onImagesUpload={handleImagesUpload}
       />
