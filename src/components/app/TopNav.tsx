@@ -133,8 +133,13 @@ function TopNav() {
                   {items.length}
                 </div>
               </Link>
-
-              <BiMessageDetail size="25" color="#161724" />
+              <Link
+                to={'/chats/'}
+                className="flex relative  flex-col px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                onClick={() => console.log('chat')}
+              >
+                <BiMessageDetail size="25" color="#161724" />
+              </Link>
 
               <div className="relative">
                 <button className="mt-1" onClick={() => setShowMenu(!showMenu)}>

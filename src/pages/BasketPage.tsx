@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import React from 'react';
 import { GET_MY_SHOPPING_CART } from '../graphql/queries/GetMyShoppingCart';
 import { Product } from '../utils/productTypes';
-import { ADD_SHOPPING_CART_PRODUCT } from '../graphql/mutations/AddShoppinCardProduct';
+import { ADD_SHOPPING_CART_PRODUCT } from '../graphql/mutations/AddShoppingCardProduct';
 import { REMOVE_SHOPPING_CART_PRODUCT } from '../graphql/mutations/RemoveShoppinCartProduct';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../context/store';
@@ -150,7 +150,7 @@ const BasketPage = () => {
             <h2 className="text-xl font-bold">
               Toplam Tutar: {totalAmount} TL
             </h2>
-            <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
+            <button className="mt-4 bg-red-500 text-white py-2 px-4 rounded-sm hover:bg-red-600">
               Satın Al
             </button>
           </div>

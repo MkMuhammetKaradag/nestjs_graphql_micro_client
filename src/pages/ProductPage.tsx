@@ -1,22 +1,14 @@
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
+import { useMutation, useQuery } from '@apollo/client';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { GET_PRODUCT } from '../graphql/queries/GetProduct';
-import { CREATE_COMMENT_PRODUCT_SUBSCRIPTION } from '../graphql/subcriptions/AddCommentProduct';
-import { GET_COMMENTS } from '../graphql/queries/GetComments';
-import CommentCard from '../components/app/CommentCard';
-import Pagination from '../components/app/Pagination';
-import styles from '../utils/styles';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { CREATE_COMMENT } from '../graphql/mutations/CreateComment';
+
 import toast from 'react-hot-toast';
 import { useAppDispatch } from '../context/hooks';
-import { ADD_SHOPPING_CART_PRODUCT } from '../graphql/mutations/AddShoppinCardProduct';
+import { ADD_SHOPPING_CART_PRODUCT } from '../graphql/mutations/AddShoppingCardProduct';
 import { addToCart } from '../context/slices/ShoppingCartSlice';
 import Comments from '../components/app/Comments';
-import { GraphQLError } from 'graphql';
+
 interface Vendor {
   id: number;
   firstName: string;

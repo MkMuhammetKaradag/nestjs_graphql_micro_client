@@ -1,0 +1,128 @@
+import { useQuery } from '@apollo/client';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { GET_MESSAGES } from '../graphql/queries/GetMessages';
+
+interface Message {
+  id: number;
+  content: string;
+  sender: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    profilPhoto: string;
+  };
+}
+
+interface GetMessagesResponse {
+  getMessages: {
+    messages: Message[];
+    total: number;
+  };
+}
+
+const ChatPage = () => {
+  const { id } = useParams<{ id: string }>();
+  const [skip, setSkip] = useState(0);
+  const [take, setTake] = useState(10);
+  const { data, fetchMore, loading, error } = useQuery<GetMessagesResponse>(
+    GET_MESSAGES,
+    {
+      variables: { chatId: Number(id), skip, take },
+      notifyOnNetworkStatusChange: true,
+      // Initial fetch query
+    }
+  );
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const handleScroll = useCallback(() => {
+    if (containerRef.current) {
+      const container = containerRef.current;
+      const scrollTop = container.scrollTop;
+      const clientHeight = container.clientHeight;
+      const scrollHeight = container.scrollHeight;
+
+      console.log('scrollTop:', scrollTop);
+      console.log('scrollHeight:', scrollHeight);
+      console.log('clientHeight:', clientHeight);
+
+      // Check if scrolled to the top
+      if (
+        scrollTop <= -200 &&
+        !loading &&
+        data?.getMessages.messages.length < data?.getMessages.total
+      ) {
+        console.log('Fetching more data...');
+        fetchMore({
+          variables: {
+            chatId: Number(id),
+            skip: skip + take,
+            take,
+          },
+          updateQuery: (prevResult, { fetchMoreResult }) => {
+            if (!fetchMoreResult) return prevResult;
+
+            return {
+              getMessages: {
+                __typename: prevResult.getMessages.__typename,
+                messages: [
+                  ...fetchMoreResult.getMessages.messages,
+                  ...prevResult.getMessages.messages,
+                ],
+                total: fetchMoreResult.getMessages.total,
+              },
+            };
+          },
+        })
+          .then(() => {
+            setSkip((prevSkip) => prevSkip + take);
+          })
+          .catch((err: any) =>
+            console.error('Fetch more error:', err.graphQLErrors[0].message)
+          );
+      }
+    }
+  }, [data, fetchMore, loading, skip, take]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      console.log('Adding scroll event listener');
+      container.addEventListener('scroll', handleScroll);
+      return () => {
+        console.log('Removing scroll event listener');
+        container.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [handleScroll]);
+
+  if (loading && !data) return <p>Loading...</p>;
+  if (error) return <p>Error!</p>;
+
+  return (
+    <div
+      ref={containerRef}
+      className="flex flex-col-reverse space-y-4 p-4 overflow-auto w-[400px] h-[400px]"
+    >
+      {data?.getMessages.messages.map((message) => (
+        <div key={message.id} className="flex items-start space-x-2">
+          <img
+            src={message.sender.profilPhoto}
+            alt={`${message.sender.firstName} ${message.sender.lastName}`}
+            className="w-8 h-8 rounded-full"
+          />
+          <div>
+            <p className="font-semibold">
+              {message.sender.firstName} {message.sender.lastName}
+            </p>
+            <p>{message.content}</p>
+          </div>
+        </div>
+      ))}
+      {loading && <p>Loading more...</p>}
+    </div>
+  );
+};
+
+export default ChatPage;
