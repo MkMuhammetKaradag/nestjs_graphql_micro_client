@@ -18,8 +18,10 @@ import { useAppDispatch, useAppSelector } from '../../context/hooks';
 import { setIsAuth, setUser } from '../../context/slices/AuthSlice';
 import { setSearchText } from '../../context/slices/AppSlice';
 import { RootState } from '@reduxjs/toolkit/query';
+import { SET_USER_ONLINE_STATUS } from '../../graphql/mutations/SetUserOnlineStatus';
 function TopNav() {
   const [logoutUser] = useMutation(LOGOUT_USER);
+  const [setUserOnlineStatus] = useMutation(SET_USER_ONLINE_STATUS);
   const [searchInput, setSearchInput] = useState('');
   const user = useAppSelector((s) => s.auth.user);
   const items = useAppSelector((state) => state.shoppingCart.items);
@@ -33,8 +35,8 @@ function TopNav() {
 
   const handleLogout = async () => {
     try {
+      await setUserOnlineStatus({ variables: { input: { isOnline: false } } });
       await logoutUser();
-
       dispatch(setIsAuth(false));
       dispatch(setUser(null));
       setShowMenu(false);

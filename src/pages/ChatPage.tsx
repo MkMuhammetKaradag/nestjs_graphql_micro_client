@@ -2,9 +2,15 @@ import { useQuery } from '@apollo/client';
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { GET_MESSAGES } from '../graphql/queries/GetMessages';
-interface Message {
+import { useAppSelector } from '../context/hooks';
+import MessagesComponent from '../components/app/MessagesComponent';
+import styles from '../utils/styles';
+import MessageSendForm from '../components/app/MessageSendForm';
+import ChatUsersComponent from '../components/app/ChatUsersComponent';
+export interface Message {
   id: number;
   content: string;
+  createdAt: string;
   sender: {
     id: number;
     firstName: string;
@@ -13,107 +19,56 @@ interface Message {
   };
 }
 
-interface GetMessagesResponse {
-  getMessages: {
-    messages: Message[];
-    total: number;
-  };
+interface MessageProps {
+  message: Message;
 }
-
 const ChatPage = () => {
   const { id } = useParams<{ id: string }>();
+  // const MessageComponent: React.FC<MessageProps> = ({ message }) => {
+  //   const user = useAppSelector((s) => s.auth.user);
+  //   const isMyMessage = message.sender.id == user?.id; // Kendi mesajlarınızı belirlemek için
+  //   const formattedDate = new Date(message.createdAt).toLocaleString();
 
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [skip, setSkip] = useState(0);
-  const take = 10;
+  //   return (
+  //     <div
+  //       className={`flex ${isMyMessage ? 'justify-end' : 'justify-start'} mb-4`}
+  //     >
+  //       {!isMyMessage && (
+  //         <img
+  //           src={message.sender.profilPhoto}
+  //           alt={`${message.sender.firstName} ${message.sender.lastName}`}
+  //           className="w-10 h-10 rounded-full mr-3"
+  //         />
+  //       )}
+  //       <div>
+  //         <div
+  //           className={`p-4 rounded-lg ${
+  //             isMyMessage ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'
+  //           }`}
+  //         >
+  //           <p>{message.content}</p>
+  //         </div>
+  //         <span className="text-xs text-gray-500">{formattedDate}</span>
+  //       </div>
 
-  const { data, loading, fetchMore } = useQuery<GetMessagesResponse>(
-    GET_MESSAGES,
-    {
-      variables: { chatId: Number(id), skip: 0, take },
-      notifyOnNetworkStatusChange: true,
-      // onCompleted: (res) => {
-      //   setSkip(res.getMessages.length);
-      // },
-    }
-  );
-
-  const observerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        loadMoreMessages();
-      }
-    });
-
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-
-    return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current);
-      }
-    };
-  }, [observerRef.current, loading]);
-
-  const loadMoreMessages = () => {
-    if (
-      !loading &&
-      data?.getMessages.messages.length < data?.getMessages.total
-    ) {
-      console.log(skip);
-      fetchMore({
-        variables: {
-          chatId: Number(id),
-          skip: data?.getMessages.messages.length,
-          take,
-        },
-        updateQuery: (previousResult, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return previousResult;
-
-          return {
-            ...previousResult,
-            getMessages: {
-              ...previousResult.getMessages,
-              messages: [
-                ...previousResult.getMessages.messages,
-                ...fetchMoreResult.getMessages.messages,
-              ],
-              total: fetchMoreResult.getMessages.total,
-            },
-          };
-        },
-      })
-        .then((res) => {
-          setSkip(
-            (prevSkip) => prevSkip + res.data.getMessages.messages.length
-          );
-        })
-        .catch((err: any) =>
-          console.error('Fetch more error:', err.graphQLErrors[0].message)
-        );
-    }
-  };
-  if (!data || !data.getMessages.messages) {
-    return <div>Ürün bulunamadı</div>;
-  }
-  const myMessages: Message[] = data.getMessages.messages;
+  //       {isMyMessage && (
+  //         <img
+  //           src={message.sender.profilPhoto}
+  //           alt={`${message.sender.firstName} ${message.sender.lastName}`}
+  //           className="w-10 h-10 rounded-full ml-3"
+  //         />
+  //       )}
+  //     </div>
+  //   );
+  // };
   return (
-    <div>
-      <div>{skip}</div>
-      <div style={{ overflowY: 'auto', height: '400px', width: '500px' }}>
-        {myMessages.map((message) => (
-          <div key={message.id}>
-            <p>{message.content}</p>
-            <small>
-              {message.sender.firstName} {message.sender.lastName}
-            </small>
-          </div>
-        ))}
-        {loading && <p>Loading more messages...</p>}
-        <div ref={observerRef} style={{ height: '1px' }} />
+    <div className="container bg-red-300 md:grid-cols-3 grid  lg:grid-cols-4   ">
+      <div className="col-span-1 shadow-md bg-white border- md:block hidden">
+        <ChatUsersComponent id={Number(id)}></ChatUsersComponent>
+      </div>
+      <div className="col-span-3 w-full  flex flex-col overflow-y-auto shadow-md ">
+        <MessagesComponent id={Number(id)}></MessagesComponent>
+        <MessageSendForm id={Number(id)}></MessageSendForm>
       </div>
     </div>
   );

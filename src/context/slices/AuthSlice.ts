@@ -4,9 +4,10 @@ export interface User {
   id: number;
   email: string;
   firstName: string;
+  isOnline: boolean;
   lastName: string;
   profilPhoto?: string;
-  roles:string[]
+  roles: string[];
 }
 
 export interface AuthState {
