@@ -37,19 +37,19 @@ const Router = () => {
     };
   }, [setUserOnlineStatus, user?.id]);
   return (
-    <div className="flex relative items-center h-screen flex-col">
+    <div className="flex flex-col min-h-screen items-center ">
       <header>
         <TopNav />
       </header>
 
-      <div className="flex py-[80px]  container h-full    justify-center ">
+      <div className="flex-grow   flex py-[80px] container justify-center ">
         {!isAuth && user ? (
           <AppNavigator userRoles={user.roles}></AppNavigator>
         ) : (
           <AuthNavigator></AuthNavigator>
         )}
       </div>
-      <footer className="flex fixed bottom-0 left-0 w-full bg-gray-100 text-black p-4">
+      <footer className="mt-auto flex bottom-0 left-0 w-full bg-gray-100 text-black p-4">
         <div>sdsdasdasdlnasjdh</div>
       </footer>
     </div>

@@ -150,10 +150,10 @@ const MessagesComponent: React.FC<MessagesProps> = ({ id }) => {
       className="p-6  w-full h-full bg-white rounded-sm  space-y-4 overflow-y-auto flex flex-col"
     >
       <div ref={observerRef} style={{ height: '1px' }} />
+      {loading && <p>Loading more messages...</p>}
       {myMessages.map((message) => (
         <MessageComponent key={message.id} message={message} />
       ))}
-      {loading && <p>Loading more messages...</p>}
     </div>
   );
 };

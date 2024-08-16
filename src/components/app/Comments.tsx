@@ -107,8 +107,8 @@ const Comments: React.FC<CommentsProps> = ({ id }) => {
   }
   const comments: Comment[] | null = dataComments.getComments.comments;
   return (
-    <div className="flex flex-col  relative">
-      <div className="max-h-[84%] overflow-auto">
+    <div className=" w-full h-[68vh]   flex flex-col relative">
+      <div className="flex-grow flex-col overflow-y-auto">
         {comments && comments?.length > 0 ? (
           comments.map((comment) => {
             return <CommentCard comment={comment}></CommentCard>;
@@ -117,7 +117,7 @@ const Comments: React.FC<CommentsProps> = ({ id }) => {
           <div>Non Comment</div>
         )}
       </div>
-      <div className="absolute bottom-0 w-full">
+      <div className="flex  flex-col bottom-0">
         <form onSubmit={handleSubmit(onSubmitCreateComment)}>
           <input
             {...register('comment')}

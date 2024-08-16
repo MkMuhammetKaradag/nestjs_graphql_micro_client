@@ -131,7 +131,7 @@ const ProductCreationPage = () => {
   ];
 
   return (
-    <div className="w-1/2  bg-whiterounded overflow-hidden shadow-lg p-3 relative   bg-white">
+    <div className=" bg-whiterounded overflow-hidden shadow-lg p-3 relative   bg-white">
       <Stepper steps={steps} />
     </div>
   );
