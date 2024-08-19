@@ -46,14 +46,15 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       return <div>loading</div>;
     }
 
-    const { data } = await createPaymentIntent({
+    const { data, } = await createPaymentIntent({
       variables: { input: { amount, cartId } }, // Örnek değerler
     });
 
     if (!data || !data.createPaymentIntent) {
       throw new Error('Payment Intent oluşturulurken bir hata oluştu.');
     }
-    const clientSecret = data.createPaymentIntent;
+    const { clientSecret, paymentId } = data.createPaymentIntent;
+    console.log(clientSecret, paymentId);
 
     const { error, paymentIntent } = await stripe.confirmCardPayment(
       clientSecret,
@@ -69,9 +70,20 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     } else if (paymentIntent?.status === 'succeeded') {
       await createPayment({
         variables: {
-          input: { amount, cartId, source: paymentIntent.id },
+          input: {
+            amount,
+            cartId,
+            source: paymentIntent.id,
+            paymentId: paymentId,
+          },
         },
-      }).
+      })
+        .then()
+        .catch((err: any) => {
+          console.error(
+            `Ödeme kaydı sırasında bir hata oluştu:, ${err.graphQLErrors[0].message}`
+          );
+        });
       toast.success('Ödeme başarılı!');
       dispatch(clearCart());
       onClose();
