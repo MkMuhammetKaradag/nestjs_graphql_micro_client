@@ -6,7 +6,7 @@ import { GET_PRODUCT } from '../graphql/queries/GetProduct';
 import toast from 'react-hot-toast';
 import { useAppDispatch } from '../context/hooks';
 import { ADD_SHOPPING_CART_PRODUCT } from '../graphql/mutations/AddShoppingCardProduct';
-import { addToCart } from '../context/slices/ShoppingCartSlice';
+import { addToCart, setId } from '../context/slices/ShoppingCartSlice';
 import Comments from '../components/app/Comments';
 
 interface Vendor {
@@ -42,7 +42,9 @@ const ProductPage = () => {
 
   const dispatch = useAppDispatch();
 
-  const [updateCartItem] = useMutation(ADD_SHOPPING_CART_PRODUCT);
+  const [updateCartItem, { data: updateCartdata }] = useMutation(
+    ADD_SHOPPING_CART_PRODUCT
+  );
   const {
     data: dataProduct,
     loading: loadingProduct,
@@ -79,6 +81,10 @@ const ProductPage = () => {
     try {
       await updateCartItem({
         variables: { input: { productId: product.id } },
+      }).then((res) => {
+        if (res.data.addShoppingCartProduct.id) {
+          dispatch(setId(Number(res.data.addShoppingCartProduct.id)));
+        }
       });
 
       dispatch(addToCart(product));

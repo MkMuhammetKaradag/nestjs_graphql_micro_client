@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client';
-import React from 'react';
+import React, { useState } from 'react';
 import { GET_MY_SHOPPING_CART } from '../graphql/queries/GetMyShoppingCart';
 import { Product } from '../utils/productTypes';
 import { ADD_SHOPPING_CART_PRODUCT } from '../graphql/mutations/AddShoppingCardProduct';
@@ -15,13 +15,18 @@ import {
 import toast from 'react-hot-toast';
 import { REMOVE_SHOPPING_CART_ITEM } from '../graphql/mutations/RemoveShoppingCartItem';
 
+import PaymentModal from '../components/app/PaymentModal';
+import { useAppSelector } from '../context/hooks';
+
 const BasketPage = () => {
   const items = useSelector((state: RootState) => state.shoppingCart.items);
+  const cartId = useAppSelector((s) => s.shoppingCart.id);
   const dispatch = useDispatch();
 
   const [updateCartItem] = useMutation(ADD_SHOPPING_CART_PRODUCT);
   const [removeCartItemProduct] = useMutation(REMOVE_SHOPPING_CART_PRODUCT);
   const [removeCartItem] = useMutation(REMOVE_SHOPPING_CART_ITEM);
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const totalAmount = items.reduce(
     (total, item) => total + item.product.price * item.quantity,
@@ -148,11 +153,21 @@ const BasketPage = () => {
           </div>
           <div className="mt-8 text-right">
             <h2 className="text-xl font-bold">
-              Toplam Tutar: {totalAmount} TL
+              Toplam Tutar: {totalAmount} * {cartId}- TL
             </h2>
-            <button className="mt-4 bg-red-500 text-white py-2 px-4 rounded-sm hover:bg-red-600">
+            <button
+              className="mt-4 bg-red-500 text-white py-2 px-4 rounded-sm hover:bg-red-600"
+              onClick={() => setModalVisible(true)}
+            >
               Satın Al
             </button>
+
+            <PaymentModal
+              cartId={cartId}
+              isVisible={isModalVisible}
+              onClose={() => setModalVisible(false)}
+              amount={totalAmount}
+            />
           </div>
         </div>
       )}

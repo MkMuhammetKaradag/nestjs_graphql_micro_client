@@ -40,6 +40,7 @@ const ReduxProvider = ({ children }: ReduxProvider) => {
       },
       shoppingCart: {
         items: dataBasket?.getMyShoppingCart?.shoppingCart?.items || [],
+        id: dataBasket?.getMyShoppingCart?.shoppingCart?.id,
       },
     },
   });

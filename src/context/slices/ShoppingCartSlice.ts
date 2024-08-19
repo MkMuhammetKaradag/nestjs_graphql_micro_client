@@ -9,10 +9,12 @@ type ShoppingCartItem = {
 };
 
 type ShoppingCartState = {
+  id: number;
   items: ShoppingCartItem[];
 };
 
 const initialState: ShoppingCartState = {
+  id: 0,
   items: [],
 };
 
@@ -20,6 +22,9 @@ const shoppingCartSlice = createSlice({
   name: 'shoppingCart',
   initialState,
   reducers: {
+    setId: (state, action: PayloadAction<number>) => {
+      state.id = action.payload;
+    },
     addToCart: (state, action: PayloadAction<Product>) => {
       const existingItem = state.items.find(
         (item) => item.product.id === action.payload.id
@@ -62,6 +67,7 @@ export const {
   clearCart,
   setCartItems,
   removeFromCartItem,
+  setId,
 } = shoppingCartSlice.actions;
 
 export default shoppingCartSlice.reducer;
