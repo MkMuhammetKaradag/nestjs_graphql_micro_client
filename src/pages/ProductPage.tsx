@@ -84,12 +84,10 @@ const ProductPage = () => {
       }).then((res) => {
         if (res.data.addShoppingCartProduct.id) {
           dispatch(setId(Number(res.data.addShoppingCartProduct.id)));
+          dispatch(addToCart(product));
+          toast.success('Product added Basket');
         }
       });
-
-      dispatch(addToCart(product));
-
-      toast.success('Product added Basket');
     } catch (error: any) {
       toast.error(`hata  ${error.graphQLErrors[0].message}`);
     }

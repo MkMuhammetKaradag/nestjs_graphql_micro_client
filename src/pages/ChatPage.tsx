@@ -16,6 +16,8 @@ import {
   Track,
   ConnectionQuality,
   LocalParticipant,
+  RemoteParticipant,
+  Participant,
 } from 'livekit-client';
 import {
   Chat,
@@ -34,7 +36,11 @@ import {
   useLocalParticipant,
   useRoomContext,
   useTrackToggle,
+  useParticipants,
+  AudioTrack,
+  TrackReferenceOrPlaceholder,
 } from '@livekit/components-react';
+import '@livekit/components-styles';
 import Modal from '../components/app/Modal';
 export interface Message {
   id: number;
@@ -109,15 +115,13 @@ const ChatPage = () => {
             token={data?.joinVideoRoom}
             serverUrl={serverUrl}
             className="h-full overflow-y-auto relative"
+            style={{ height: '100dvh' }}
             connect={connect}
             onConnected={() => setIsConnected(true)}
             onDisconnected={handleDisconnect}
           >
             {isConnected && <Stage />}
-            {/* <ControlBar
-              className="flex absolute bottom-0"
-              variation="verbose"
-            /> */}
+
             <CustomControlBar></CustomControlBar>
 
             <RoomAudioRenderer />
@@ -128,43 +132,64 @@ const ChatPage = () => {
   );
 };
 export function Stage() {
-  const tracks = useTracks([
-    { source: Track.Source.Camera, withPlaceholder: true },
-    { source: Track.Source.ScreenShare, withPlaceholder: false },
-    // { source: Track.Source.Microphone, withPlaceholder: false },
-  ]);
+  const tracks = useTracks(
+    [
+      { source: Track.Source.Camera, withPlaceholder: true },
+      // { source: Track.Source.ScreenShare, withPlaceholder: false },
+      { source: Track.Source.Microphone, withPlaceholder: false },
+    ],
+    { onlySubscribed: false }
+  );
+  console.log(tracks);
   return (
     <>
-      <div className={'overflow-y-auto'}>
-        <GridLayout tracks={tracks} className="grid grid-cols-4 gap-4 ">
+      <div className={'overflow-y-auto  h-full '}>
+        <GridLayout tracks={tracks} className="space-x-3">
           <TrackRefContext.Consumer>
             {(trackRef) =>
               trackRef && (
                 <div className="flex flex-col ">
                   {isTrackReference(trackRef) ? (
-                    <VideoTrack trackRef={trackRef} />
+                    <>
+                      {/* <VideoTrack trackRef={trackRef} /> */}
+                      <ParticipantTile  />
+                      <AudiControl trackRef={trackRef}></AudiControl>
+                    </>
                   ) : (
                     <p>Camera placeholder</p>
                   )}
-                  <div className={'flex gap-3 items-center'}>
-                    <div style={{ display: 'flex gap-1' }}>
-                      <TrackMutedIndicator
-                        trackRef={{
-                          participant: trackRef.participant,
-                          source: Track.Source.Microphone,
-                        }}
+                  {/* <AudiControl trackRef={trackRef}></AudiControl> */}
+                  {trackRef.source !== Track.Source.Microphone && (
+                    <div className={'flex gap-3 items-center'}>
+                      <div style={{ display: 'flex gap-1' }}>
+                        <TrackMutedIndicator
+                          trackRef={{
+                            participant: trackRef.participant,
+                            source: Track.Source.Microphone,
+                          }}
+                        />
+                        {/* {isTrackReference(trackRef) &&
+                        trackRef.source === Track.Source.Microphone && (
+                          <AudioTrack
+                            trackRef={trackRef}
+                            volume={0.5}
+                            muted={false}
+                          />
+                        )} */}
+
+                        <TrackMutedIndicator trackRef={trackRef} />
+                      </div>
+
+                      {/* Overwrite styles: By passing class names, we can easily overwrite/extend the existing styles. */}
+                      {/* In addition, we can still specify a style attribute and further customize the styles. */}
+                      <ParticipantName
+                        className={'text-red-700'}
+                        // style={{ color: 'blue' }}
                       />
-                      <TrackMutedIndicator trackRef={trackRef} />
+                      {/* Custom components: Here we replace the provided <ConnectionQualityIndicator />  with our own implementation. */}
+                      <UserDefinedConnectionQualityIndicator />
                     </div>
-                    {/* Overwrite styles: By passing class names, we can easily overwrite/extend the existing styles. */}
-                    {/* In addition, we can still specify a style attribute and further customize the styles. */}
-                    <ParticipantName
-                      className={'text-red-700'}
-                      // style={{ color: 'blue' }}
-                    />
-                    {/* Custom components: Here we replace the provided <ConnectionQualityIndicator />  with our own implementation. */}
-                    <UserDefinedConnectionQualityIndicator />
-                  </div>
+                  )}
                 </div>
               )
             }
@@ -229,6 +254,48 @@ const CustomControlBar: React.FC = () => {
       <button onClick={toggleVideo} className="bg-blue-500 px-4 py-2 rounded">
         {localParticipant.isCameraEnabled ? 'Kamerayı Kapat' : 'Kamerayı Aç'}
       </button>
+    </div>
+  );
+};
+
+interface AudiControlProps {
+  trackRef: TrackReferenceOrPlaceholder;
+}
+const AudiControl: React.FC<AudiControlProps> = ({ trackRef }) => {
+  const [volume, setVolume] = useState(0.9);
+  const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(event.target.value);
+    setVolume(newVolume);
+  };
+  return (
+    <div>
+      {isTrackReference(trackRef) ? (
+        <>
+          {trackRef.source === Track.Source.Microphone ? (
+            <div>
+              <AudioTrack trackRef={trackRef} volume={volume} muted={false} />
+              <input
+                id="volume"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={volume}
+                onChange={handleVolumeChange}
+              />
+            </div>
+          ) : (
+            <div>
+              {/* <VideoTrack trackRef={trackRef} /> */}
+              as
+            </div>
+
+            // <div>dd</div>
+          )}
+        </>
+      ) : (
+        <p>Camera placeholder</p>
+      )}
     </div>
   );
 };
